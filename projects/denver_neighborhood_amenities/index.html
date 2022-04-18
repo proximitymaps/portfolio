@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=utf-8 />
+  <title>Lab 8: Denver home location exercise</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <!-- Is the is the latest version of Leaflet? -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: rgb(43, 43, 43);
+      font-family: "Lato", sans-serif;
+      font-size: 100%;
+      font-weight: 300;
+      color: rgb(172, 172, 172);
+    }
+
+    header,
+    footer,
+    section {
+      padding: 6px 10%;
+      margin: 0 auto;
+      width: 80%
+    }
+
+    h1 {
+      display: inline-block;
+      margin-right: 20px;
+      color: rgb(190, 190, 190);
+      font-size: 3.5em;
+      font-weight: 700;
+    }
+
+    h2 {
+      display: inline-block;
+      color: rgba(255, 200, 0, 0.8);
+      letter-spacing: 0.05em;
+      margin-top: 0px;
+      font-weight: 300;
+      text-transform: uppercase;
+      border-bottom: 1px dotted rgba(255, 200, 0, 0.5);
+      ;
+    }
+
+    #map {
+      width: 80%;
+      height: 540px;
+      margin: 10px auto;
+    }
+
+    p {
+      font-size: 1em;
+      color: rgba(170, 170, 170);
+      ;
+      font-weight: 300;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Denver Real Estate</h1>
+    <h2>... A Proximity Study</h2>
+  </header>
+
+  <div id='map'></div>
+
+  <footer>
+    <p>Map authored by Evan Kerr</p>
+    <p>This map can be optimally used to determine the ideal location to purchase a home. When the user selects an area in Denver, everything within a 1km radius that is either a Food store, childcare, or fire station will maintain prominent points. The user is encouraged to select these points to gather more information on what is in the vicinity.</p>
+  </footer>
+  <!-- Is the is the latest version of Leaflet? -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="data/denver-fire-stations.js"></script>
+  <script src="data/after-school-programs.js"></script>
+  <script src="data/denver-food-stores.js"></script>
+  <!-- add .js files to html for use-->
+
+  <script>
+    var map = L.map('map', {
+      center: [39.7256, -104.9252],
+      zoom: 11,
+    });
+
+    var tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+
+    // BEGIN WRITING YOUR SOLUTION CODE HERE
+
+    // // Define the desired layers and their colors to place 
+    // // as JS object
+    // var layerInfo = {
+    //   storesLayer: {
+    //     source: "stores",
+    //     color: '#1f78b4'
+    //   },
+    //   programsLayer: {
+    //     source: "programs",
+    //     color: '#a6cee3'
+    //   },
+    //   stationsLayer: {
+    //     source: "stations",
+    //     color: '#550066'
+    //   }
+    // };
+
+    // // // attempt to log layersInfo to check if it is working 
+    // // console.log(layersInfo);
+
+    // geoJson method comprising of grocery locations from the "denver-food-stores.js" file loaded at the beginning of our script
+    var storesLayer = L.geoJson(stores, {
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, {
+          color: '#1f78b4',
+          fillColor: '#1f78b4',
+          fillOpacity: 1,
+          radius: 5,
+        });
+        console.log(feature);
+      },
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(layer.feature.properties.STORE_NAME);
+      }
+    }).addTo(map);
+
+
+    // geoJson method comprising of after-school programs from the "after-school-programs.js" file loaded at the beginning of our script
+    var programsLayer = L.geoJson(programs, {
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, {
+          color: '#eeaacc',
+          fillColor: '#eeaacc',
+          fillOpacity: 1,
+          radius: 5,
+        });
+        console.log(feature);
+      },
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(layer.feature.properties.ORGANIZATI);
+      }
+    }).addTo(map);
+
+
+    // geoJson method comprising of fire-stations from the "denver-food-stores.js" file loaded at the beginning of our script
+    var stationsLayer = L.geoJson(stations, {
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, {
+          color: '#9900aa',
+          fillColor: '#9900aa',
+          fillOpacity: 1,
+          radius: 5,
+        });
+        console.log(feature);
+      },
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(layer.feature.properties.STATION_NU);
+      }
+    }).addTo(map);
+
+
+    // Build empty JS object
+    var geoJsonLayers = {}; // empty object
+
+    var amenityLabels = {
+      "stores": storesLayer, // storesLayer is the variable that holds the placed geojson
+      "programs": programsLayer,
+      "stations": stationsLayer,
+    }
+
+    // tried to add layer toggle but I think there's something wrong with my amenityLabels object
+    L.control.layers(null, amenityLabels, {
+      collapsed: false
+    }).addTo(map);
+
+    // map.on('click', function (e) {
+      
+    // });
+
+
+    // map.on('click', function (e) {
+      
+    // });
+
+
+    map.on('click', function (e) {
+      storesLayer.eachLayer(function (layer) {
+        var distance = e.latlng.distanceTo(layer.getLatLng()) / 1000; // distance as km
+
+        if (distance > 1) {
+          layer.setStyle({
+            stroke: false,
+            fillOpacity: .1
+          });
+        } else {
+          layer.setStyle({
+            stroke: true,
+            fill: true
+          });
+        }
+        // layer.bindPopup(`<b>Food Store</b><br>(NAME HERE)`); // `Name: <b>${stores.features.properties.STORE_NAME}</b>`);
+        // couldn't determine what to add using dot notation to the bindPopup method to enable mouseOver
+      });
+      stationsLayer.eachLayer(function (layer) {
+        var distance = e.latlng.distanceTo(layer.getLatLng()) / 1000; // distance as km
+
+        if (distance > 1) {
+          layer.setStyle({
+            stroke: false,
+            fillOpacity: .1
+          });
+        } else {
+          layer.setStyle({
+            stroke: true,
+            fill: true
+          });
+        }
+        // layer.bindPopup(`<b>Fire Station</b><br>(NUMBER HERE)`);// Number: <b>${stations.features.properties.STATION_NU}</b>`);
+        // couldn't determine what to add using dot notation to the bindPopup method to enable mouseOver
+      });
+      programsLayer.eachLayer(function (layer) {
+        var distance = e.latlng.distanceTo(layer.getLatLng()) / 1000; // distance as km
+
+        if (distance > 1) {
+          layer.setStyle({
+            stroke: false,
+            fillOpacity: .1
+          });
+        } else {
+          layer.setStyle({
+            stroke: true,
+            fill: true
+          });
+        }
+        layer.bindTooltip(`<b>After School Program</b><br>${layer.feature.properties.ORGANIZATI}`); // Name: <b>${programs.features.properties.ORGANIZATI}</b><br>`);
+        // couldn't determine what to add using dot notation to the bindPopup method to enable mouseOver
+      });
+    });
+  </script>
+
+</body>
+
+</html>
