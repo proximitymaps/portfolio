@@ -9,6 +9,9 @@ body {
 }
 
 header {
+  background-size: cover;
+  /* background: radial-gradient(circle, rgb(14, 162, 76), rgb(203, 115, 44)); */
+  background-image: url("https://images.freeimages.com/images/small-previews/04e/sunset-1189623.jpg");
   padding: 154px 0 100px;
 }
 
@@ -34,4 +37,9 @@ a {
 header {
   padding: 154px 0 100px;
   background-color: #448ee4;
+}
+
+.card .card-img-top {
+  object-fit: cover;
+  height: calc(50px + 20vw);
 }
